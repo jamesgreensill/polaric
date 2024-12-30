@@ -27,14 +27,11 @@ def install_requirements():
         
     activate_script = f"{venv_directory}/Scripts/activate" if os_name == "nt" else f"source {venv_directory}/bin/activate"
     command = f"{activate_script} && pip3 install -r {requirements_file}"
+    
     try:
-        match(os.name):
-            case "nt":
-                subprocess.run(command, shell=True, check=True)
-                pass
-            case _:
-                subprocess.run(command, shell=True, executable="/bin/bash", check=True)
-                pass
+        if (os.name == "nt"):
+            subprocess.run(command, shell=True, check=True)
+        else:  subprocess.run(command, shell=True, executable="/bin/bash", check=True)
         print("Dependencies installed successfully.")
     except subprocess.CalledProcessError as e:
         print("Error installing dependencies:", e)
