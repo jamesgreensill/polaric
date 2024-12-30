@@ -1,0 +1,10 @@
+DIRECTORY=$(dirname "$(readlink -f "$BASH_SOURCE")")
+PYTHON="$DIRECTORY/.v/bin/python3"
+
+alias di="$PYTHON $DIRECTORY/di.py"
+alias asic="$PYTHON $DIRECTORY/asic.py"
+alias whm_custom="$PYTHON $DIRECTORY/whm.py"
+alias cor="$PYTHON $DIRECTORY/cor.py"
+alias spf="$PYTHON $DIRECTORY/spf.py"
+
+
