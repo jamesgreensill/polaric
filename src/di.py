@@ -77,7 +77,7 @@ RECORD_HIGHLIGHTS = {
 def process_spf_highlight(record):
     resolver = spf.SPFResolver()
     lookup = resolver.resolve_spf(record)
-    return "WHITE" if len(lookup["errors"]) <= 0 else common.styleise("HI_BG_RED", "BOLD")
+    return "WHITE" if len(lookup["errors"]) <= 0 else "HI_BG_RED"
 
 
 def process_highlight(record_type, record):

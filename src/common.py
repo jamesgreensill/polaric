@@ -60,27 +60,24 @@ def get_text_from_nano():
     return content
 
 
-def styleise(escape_code, new_code):
-    parts = escape_code.split(';')
-    parts[0] = f"{new_code}"
+def styleise(color, style):
+    parts = color.split(';')
+    parts[0] = f"{style}"
     return '\033[' + ';'.join(parts)
 
 def digitialise(text):
     return ''.join(char for char in text if char.isdigit())
 
 
-def gen_color_str(message, color, style="0"):
-    if style == None:
-        return f"{COLORS[color]}{message}{RESET}"
-    else:
-        return f"{styleise(COLORS[color], STYLES[style])}{message}{RESET}"
+def gen_color_str(message, color, style):
+    return f"{styleise(COLORS[color], STYLES[style])}{message}{RESET}"
 
 
 def hyperlink(link, display):
     return f'\033]8;;{link}\033\\{display}\033]8;;\033\\'
 
 
-def print_color(message, color, style=None, end="\n"):
+def print_color(message, color, style="NORMAL", end="\n"):
     """Prints a message with the specified color."""
     print(gen_color_str(message, color, style), end=end)
 
