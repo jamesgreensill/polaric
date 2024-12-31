@@ -77,10 +77,10 @@ def parse_output(output):
 def display_output(whm_object):
     for title, data in whm_object.items():
         if "links" in data:
-            common.print_color(f"{title}", "RED", "BOLD")
+            common.print_color(f"{title}", "CYAN", "BOLD")
             for name, link in data["links"].items():
                 common.print_color(
-                    f"{common.hyperlink(link, name)}", "YELLOW")
+                    f"{common.hyperlink(link, name)}", "WHITE")
     return
 
 
