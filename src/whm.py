@@ -49,7 +49,6 @@ def parse_output(output):
     whm_object = {}
     title = ""
     for line in output.split('\n'):
-        # print(line)
         if "=====" in line:
             if "No service found for domain" in line:
                 continue
@@ -71,8 +70,6 @@ def parse_output(output):
 
     if title == "":
         return None
-
-    print(whm_object)
 
     return whm_object
 
