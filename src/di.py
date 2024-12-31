@@ -18,8 +18,6 @@ START_TIME=time.time()
 CENTER_LENGTH = 50
 CENTER_CHAR = "-"
 
-# ANSI color codes for output formatting
-
 
 COLOR_LIST = ["GREEN", "YELLOW", "RED",
               "BLUE", "PURPLE", "CYAN"]
@@ -28,7 +26,7 @@ PRIMARY_COLOR = "RED"
 RECORD_COLOR = "GREEN"
 RECORD_SEPARATOR = " -> "
 
-# DNS record types to query and their specific attributes
+# DNS record types to resolve and their specific attributes
 RECORDS = [
     "SOA",
     "NS",
@@ -130,11 +128,11 @@ def display_target(target, resolver, separator=RECORD_SEPARATOR, depth=0, is_mul
         indent = "\t" * depth if is_multiple else ""
         common.print_color(f"{indent}{target}", color=color, end=end)
 
-    color = COLOR_LIST[depth % len(COLOR_LIST)]
+    color = "WHITE"
 
     if common.is_fqdn(target):
         try:
-            results = resolver.query(f"{target}", "A")
+            results = resolver.resolve(f"{target}", "A")
             is_multiple = len(results) > 1
 
             print_target(target, color, is_multiple)
@@ -150,14 +148,15 @@ def display_target(target, resolver, separator=RECORD_SEPARATOR, depth=0, is_mul
         except Exception as e:
             common.print_color(f"Error resolving {target}: {e}", "RED", "FLASH")
     elif common.is_valid_ip(target):
-        # fucky formatting with the ➤ character. needs 2 spaces.
         try:
             hostname = socket.gethostbyaddr(f"{target}")[0]
             print_target(target, color, is_multiple)
             print(f"{separator}", end="")
             common.print_color(hostname, "CYAN")
-        except Exception as e:
-            common.print_color(f"Error resolving IP {target}: {e}", "RED")
+        
+        except socket.herror as e:
+            print(f"{separator}", end="")
+            common.print_color(f"Unknown Host", "RED", "FLASH")    
     else:
         print_target(target, color, is_multiple)
         print()
@@ -173,7 +172,7 @@ def as_list(obj):
 def check_subdomain_exists(subdomain, domain, resolver):
     try:
         # Try resolving the subdomain's A record
-        resolver.query(f"{subdomain}.{domain}", 'A')
+        resolver.resolve(f"{subdomain}.{domain}", 'A')
         return True
     except dns.resolver.NXDOMAIN:
         return False
@@ -187,7 +186,7 @@ def shallow_dns_lookup(domain, nameserver=None, record_types=[], resolver=dns.re
 
     for record_type in record_types:
         try:
-            result = resolver.query(domain, record_type)
+            result = resolver.resolve(domain, record_type)
             if domain not in records:
                 records[domain] = {}
 
@@ -235,11 +234,10 @@ def transform_records(records):
 
     return transformed_records
 
-
-def extract_subdomain(domain):
-    parts = domain.split(".")
-    return parts[0] if len(parts) >= 3 else ""
-
+def extract_subdomain(domain, base_domain):
+    if domain == base_domain:
+        return ""
+    return domain.replace(f".{base_domain}", "")
 
 def display_all_records(root_domain, records, nameserver):
     resolver = dns.resolver.Resolver()
@@ -250,7 +248,7 @@ def display_all_records(root_domain, records, nameserver):
     for record_type, domains in transformed_records.items():
         print_header(f"{record_type} RECORDS")
         for domain, records in domains.items():
-            subdomain = extract_subdomain(domain)
+            subdomain = extract_subdomain(domain, root_domain)
             display_records(subdomain, record_type, records, resolver)
 
 
@@ -289,7 +287,6 @@ def error_check_spf(domain):
     if spf_lookup is None:
         return
 
-    spf_lookup["errors"].append("Test Error")
     if (len(spf_lookup["errors"]) > 0):
         print_header(f"SPF TRACE: {domain}")
         resolver.display_lookup(spf_lookup)
@@ -312,7 +309,7 @@ def main():
         prog="DI",
         description="Domain Information"
     )
-    parser.add_argument("domain", help="Domain to query")
+    parser.add_argument("domain", help="Domain to resolve")
     parser.add_argument("-ns", "--nameserver",
                         help="Specify a custom nameserver")
     parser.add_argument("-sd", "--subdomains", action="store_true")
