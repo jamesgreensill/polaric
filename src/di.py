@@ -16,14 +16,13 @@ import time
 START_TIME=time.time()
 
 CENTER_LENGTH = 50
-CENTER_CHAR = "-"
+CENTER_CHAR = "."
 
+PRIMARY_COLOR = "CYAN"
+HOST_COLOR = PRIMARY_COLOR
 
-COLOR_LIST = ["GREEN", "YELLOW", "RED",
-              "BLUE", "PURPLE", "CYAN"]
-
-PRIMARY_COLOR = "RED"
-RECORD_COLOR = "GREEN"
+SECONDARY_COLOR = "WHITE"
+RECORD_HIGHLIGHT_COLOR = "HI_GREEN"
 RECORD_SEPARATOR = " -> "
 
 # DNS record types to resolve and their specific attributes
@@ -58,7 +57,6 @@ SUBDOMAIN_LOOKUPS = [
     "www",
     "shop",
     "_dmarc",
-    "_fuckoff"
 ]
 
 SPECIAL_RECORD_VALUES = {
@@ -67,15 +65,20 @@ SPECIAL_RECORD_VALUES = {
     (r"TXT", r"spf\.hostingplatform\.net\.au"): lambda: "default._domainkey"
 }
 
+# genererate regex for this: ns*.syd.hostingplatform.net.au
+
 RECORD_HIGHLIGHTS = {
-    (r"TXT", r"v=spf1"): lambda record: process_spf_highlight(record)
-}
+    (r"TXT", r"v=spf1"): lambda record: process_spf_highlight(record),
+    (r"MX", r"mx\d+\.email-hosting\.net\.au\."): lambda record: RECORD_HIGHLIGHT_COLOR,
+    (r"NS", r"^ns\d+\.[a-zA-Z0-9]+\.hostingplatform\.net\.au"): lambda record: RECORD_HIGHLIGHT_COLOR,
+    (r"NS", r"ns\d+\.nameserver\.net\.au"): lambda record: RECORD_HIGHLIGHT_COLOR,
+    }
 
 
 def process_spf_highlight(record):
     resolver = spf.SPFResolver()
     lookup = resolver.resolve_spf(record)
-    return "WHITE" if len(lookup["errors"]) <= 0 else "HI_BG_RED"
+    return RECORD_HIGHLIGHT_COLOR if len(lookup["errors"]) <= 0 else "HI_BG_RED"
 
 
 def process_highlight(record_type, record):
@@ -97,7 +100,7 @@ def print_header(message):
     left_padding = offset // 2
     right_padding = offset - left_padding
     common.print_color(CENTER_CHAR * left_padding, PRIMARY_COLOR, end="")
-    common.print_color(f"\x1b[7m{message}\x1b[0m", PRIMARY_COLOR, "BOLD", end="")
+    common.print_color(f"\x1b[7m{message}\x1b[0m", PRIMARY_COLOR, "NORMAL", end="")
     common.print_color(CENTER_CHAR * right_padding, PRIMARY_COLOR, end="\n")
 
 
@@ -110,7 +113,7 @@ def display_records(domain, record_type, records, resolver):
                 f"{domain}. ", "CYAN", "BOLD", end="")
 
         record_display = RECORDS_DISPLAY[record_type](record)
-        record_color = RECORD_COLOR
+        record_color = SECONDARY_COLOR
 
         highlight = process_highlight(record_type, record_display)
         if highlight is not None:
@@ -152,7 +155,7 @@ def display_target(target, resolver, separator=RECORD_SEPARATOR, depth=0, is_mul
             hostname = socket.gethostbyaddr(f"{target}")[0]
             print_target(target, color, is_multiple)
             print(f"{separator}", end="")
-            common.print_color(hostname, "CYAN")
+            common.print_color(hostname, HOST_COLOR)
         
         except socket.herror as e:
             print(f"{separator}", end="")
@@ -260,13 +263,13 @@ def display_asic(registrant_id):
 def display_whois(whois_information):
     print_header("WHOIS Information")
     common.print_color(
-        f"Registrar: {whois_information.registrar}", "YELLOW")
+        f"Registrar: {whois_information.registrar}", SECONDARY_COLOR)
     for updated_date in as_list(whois_information.updated_date):
-        common.print_color(f"Updated: {updated_date}", "YELLOW")
+        common.print_color(f"Updated: {updated_date}", SECONDARY_COLOR)
     for status in as_list(whois_information.status):
-        common.print_color(f"Status: {status}", "YELLOW")
+        common.print_color(f"Status: {status}", SECONDARY_COLOR)
     for i, nameserver in enumerate(as_list(whois_information.name_servers)):
-        common.print_color(f"Nameserver {i+1}: {nameserver}", "YELLOW")
+        common.print_color(f"Nameserver {i+1}: {nameserver}", SECONDARY_COLOR)
 
 
 def display_whm(domain):
