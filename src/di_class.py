@@ -632,7 +632,8 @@ class RecordDisplay:
         elif DNSResolver.is_valid_ip(target.value):
             try:
                 hostname = socket.gethostbyaddr(f"{target.value}")[0]
-                print_target(target.value, highlight_pattern, color, highlight_color, is_multiple)
+                
+                print_target(target if depth == 0 else target.value, highlight_pattern, color, highlight_color, is_multiple)
                 print(f"{separator}", end="")
                 Logger.write(hostname, color)
             
