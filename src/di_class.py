@@ -599,7 +599,7 @@ class RecordDisplay:
     def display_target(target, resolver, separator, depth=0, is_multiple=False):
         def print_target(target, highlight, color, highlight_color, is_multiple, end=""):
             indent = "\t" * depth if is_multiple else ""
-            Logger.write((f"{indent}{Logger.highlight(f"{target}", highlight, highlight_color, color)}"), color, end=end)
+            Logger.write(f"{indent}{Logger.highlight(f'{target}', highlight, highlight_color, color)}", color, end=end)
 
         color = Config.COLORS.SECONDARY_COLOR
         
