@@ -53,15 +53,6 @@ class RecordType(enum.Enum):
     MX=enum.auto(),
     TXT=enum.auto(),
 
-    def from_str(str):
-        match(str):
-            case "A": return RecordType.A
-            case "AAAA": return RecordType.AAAA
-            case "NS": return RecordType.NS
-            case "SOA": return RecordType.SOA
-            case "MX": return RecordType.MX
-            case "TXT": return RecordType.TXT
-
 class Config:
     class HEADER:
         CHAR="."
