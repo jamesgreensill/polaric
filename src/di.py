@@ -12,20 +12,20 @@ import subprocess
 import spf
 import requests
 import time
+import enum
 
 START_TIME=time.time()
 
 CENTER_LENGTH = 50
 CENTER_CHAR = "."
 
-PRIMARY_COLOR = "CYAN"
+PRIMARY_COLOR = "RED"
 HOST_COLOR = PRIMARY_COLOR
 
 SECONDARY_COLOR = "WHITE"
 RECORD_HIGHLIGHT_COLOR = "HI_GREEN"
 RECORD_SEPARATOR = " -> "
 
-# DNS record types to resolve and their specific attributes
 RECORDS = [
     "SOA",
     "NS",
@@ -65,15 +65,12 @@ SPECIAL_RECORD_VALUES = {
     (r"TXT", r"spf\.hostingplatform\.net\.au"): lambda: "default._domainkey"
 }
 
-# genererate regex for this: ns*.syd.hostingplatform.net.au
-
 RECORD_HIGHLIGHTS = {
     (r"TXT", r"v=spf1"): lambda record: process_spf_highlight(record),
-    (r"MX", r"mx\d+\.email-hosting\.net\.au\."): lambda record: RECORD_HIGHLIGHT_COLOR,
+    (r"MX", r"mx\d+\.email-hosting\.net\.au\."): lambda record: "RED",
     (r"NS", r"^ns\d+\.[a-zA-Z0-9]+\.hostingplatform\.net\.au"): lambda record: RECORD_HIGHLIGHT_COLOR,
     (r"NS", r"ns\d+\.nameserver\.net\.au"): lambda record: RECORD_HIGHLIGHT_COLOR,
     }
-
 
 def process_spf_highlight(record):
     resolver = spf.SPFResolver()
@@ -228,7 +225,6 @@ def deep_dns_lookup(domain, nameserver, record_types, resolver):
 
 def transform_records(records):
     transformed_records = {}
-
     for domain, record_types in records.items():
         for record_type, record in record_types.items():
             if record_type not in transformed_records:
@@ -286,10 +282,8 @@ def display_whm(domain):
 def error_check_spf(domain):
     resolver = spf.SPFResolver()
     spf_lookup = resolver.resolve_domain(domain)
-
     if spf_lookup is None:
         return
-
     if (len(spf_lookup["errors"]) > 0):
         print_header(f"SPF TRACE: {domain}")
         resolver.display_lookup(spf_lookup)

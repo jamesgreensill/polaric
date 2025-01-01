@@ -5,5 +5,6 @@ alias di="$PYTHON $DIRECTORY/src/di.py"
 alias asic="$PYTHON $DIRECTORY/src/asic.py"
 alias cor="$PYTHON $DIRECTORY/src/cor.py"
 alias spf="$PYTHON $DIRECTORY/src/sspf.py"
+alias di_new="$PYTHON $DIRECTORY/src/di_class.py"
 
 

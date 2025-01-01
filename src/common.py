@@ -116,6 +116,5 @@ def is_valid_ip(ip):
         if is_valid_ipv4(ip):
             return True
     if is_valid_ipv6(ip):
-        return True
-
+        return Tru
     return False
