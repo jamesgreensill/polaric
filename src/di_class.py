@@ -489,13 +489,13 @@ class DNSResolver:
     def resolve(self, domain, type):
         try:
             answers = self.resolver.resolve(domain, type.name)
-            match type:
-                case RecordType.MX:
-                    return [MXRecord(domain, answer.exchange.to_text(), answer.preference) for answer in answers]
-                case RecordType.SOA:
-                    answer = answers[0]
-                    return [SOARecord(domain, answer.to_text(), answer.mname.to_text(), answer.rname.to_text(), answer.serial, answer.refresh, answer.retry, answer.expire, answer.minimum)]
-                case _: return [Record(domain, answer.to_text(), type) for answer in answers]
+            if type == RecordType.MX:
+                return [MXRecord(domain, answer.exchange.to_text(), answer.preference) for answer in answers]
+            elif type == RecordType.SOA:
+                answer = answers[0]
+                return [SOARecord(domain, answer.to_text(), answer.mname.to_text(), answer.rname.to_text(), answer.serial, answer.refresh, answer.retry, answer.expire, answer.minimum)]
+            else:
+                return [Record(domain, answer.to_text(), type) for answer in answers]
         except dns.resolver.NoAnswer:
             return []
         except dns.resolver.NXDOMAIN:
