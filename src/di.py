@@ -186,8 +186,8 @@ class ACN:
     
     def __str__(self):
         builder = StringBuilder()
-        builder.write(self.url, Config.COLORS.ACN_SECONDARY_COLOR, Config.STYLES.ACN_STYLE)
-        builder.write(f"ACN: {self.id}", Config.COLORS.ACN_SECONDARY_COLOR, Config.STYLES.ACN_STYLE)
+        builder.write(self.url, Config.COLORS.ASIC_SECONDARY_COLOR, Config.STYLES.ASIC_STYLE)
+        builder.write(f"ACN: {self.id}", Config.COLORS.ASIC_SECONDARY_COLOR, Config.STYLES.ASIC_STYLE, end="")
         return builder.get_string()
 
 class ABN:
