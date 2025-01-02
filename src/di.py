@@ -638,6 +638,7 @@ class RecordDisplay:
                 Logger.write(hostname, color)
             
             except socket.herror as e:
+                print_target(target if depth == 0 else target.value, highlight_pattern, color, highlight_color, is_multiple)
                 print(f"{separator}", end="")
                 Logger.write(f"Unknown Host", Colors.RED, Styles.REVERSED)
         else:
