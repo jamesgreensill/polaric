@@ -747,7 +747,7 @@ def main():
     spf_resolver = SPFResolver(dns_resolver)
     spf_lookup = spf_resolver.resolve_domain(base_domain)
     
-    if (len(spf_lookup["errors"]) > 0):
+    if (spf_lookup != None and len(spf_lookup["errors"]) > 0):
         Logger.write_header("SPF Lookup", Config.COLORS.SPF_PRIMARY_COLOR, Config.STYLES.SPF_STYLE)
         spf_display = SPFDisplay(spf_lookup)
         spf_display.display()
