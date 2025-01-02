@@ -223,6 +223,8 @@ class ABN:
         builder.write(f"ABN: {self.id}", Config.COLORS.ASIC_SECONDARY_COLOR, Config.STYLES.ASIC_STYLE)
         builder.write(f"Name: {self.name}", Config.COLORS.ASIC_SECONDARY_COLOR, Config.STYLES.ASIC_STYLE)
         builder.write(f"Type: {self.type}", Config.COLORS.ASIC_SECONDARY_COLOR, Config.STYLES.ASIC_STYLE)
+        
+        self.status = f"Status: {self.status}"
         builder.append(builder.highlight(self.status, "Active", Colors.GREEN, Config.COLORS.ASIC_SECONDARY_COLOR, Config.STYLES.ASIC_STYLE) 
                        if "Active" in self.status 
                        else builder.highlight(self.status, "Cancelled", Colors.RED, Config.STYLES.ASIC_STYLE))
